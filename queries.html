@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Exam Branch - Queries</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container img {
+            height: 50px;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .roll-number {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .query-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: #4a90e2;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #357abd;
+        }
+
+        .queries-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        .queries-table th,
+        .queries-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .queries-table th {
+            background: #4a90e2;
+            color: white;
+            font-weight: 500;
+        }
+
+        .queries-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status {
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .no-queries {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .logout-btn {
+            background: #4a90e2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #357abd;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .query-form {
+                padding: 1rem;
+            }
+
+            .queries-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="/api/placeholder/100/50" alt="KLH College Logo">
+        </div>
+        <div class="profile-container">
+            <img src="/api/placeholder/40/40" alt="Profile Picture" class="profile-pic">
+            <span class="roll-number" id="userRollNumber"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <form id="queryForm" class="query-form">
+            <div class="form-group">
+                <label for="rollNumber">Roll Number</label>
+                <input type="text" id="rollNumber" readonly>
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" required placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="issueType">Issue Type</label>
+                <select id="issueType" required>
+                    <option value="">Select Issue Type</option>
+                    <option value="Name Misprint">Name Misprint</option>
+                    <option value="Marks Issue">Marks Issue</option>
+                    <option value="Hall Ticket Issue">Hall Ticket Issue</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" required placeholder="Describe your issue in detail..."></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Submit Query</button>
+        </form>
+
+        <table class="queries-table">
+            <thead>
+                <tr>
+                    <th>Issue Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Admin Remarks</th>
+                    <th>Submission Date</th>
+                </tr>
+            </thead>
+            <tbody id="queriesTableBody"></tbody>
+        </table>
+    </main>
+
+    <script>
+        // Check if user is logged in
+        const userRollNumber = localStorage.getItem('userRollNumber');
+        if (!userRollNumber) {
+            window.location.href = 'index.html';
+        }
+
+        // Display roll number
+        document.getElementById('userRollNumber').textContent = userRollNumber;
+        document.getElementById('rollNumber').value = userRollNumber;
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userRollNumber');
+            window.location.href = 'index.html';
+        }
+
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Function to get queries from localStorage
+        function getQueries() {
+            return JSON.parse(localStorage.getItem('queries')) || [];
+        }
+
+        // Function to save queries to localStorage
+        function saveQueries(queries) {
+            localStorage.setItem('queries', JSON.stringify(queries));
+        }
+
+        // Function to display queries in table
+        function displayQueries() {
+            const queries = getQueries();
+            const userQueries = queries.filter(query => query.rollNumber === userRollNumber);
+            const tableBody = document.getElementById('queriesTableBody');
+            tableBody.innerHTML = '';
+
+            if (userQueries.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="no-queries">No queries submitted yet</td>
+                `;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            userQueries.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted))
+                      .forEach(query => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${query.issueType}</td>
+                    <td>${query.description}</td>
+                    <td><span class="status status-${query.status.toLowerCase().replace(' ', '-')}">${query.status}</span></td>
+                    <td>${query.assignedTo}</td>
+                    <td>${query.adminRemarks || '-'}</td>
+                    <td>${formatDate(query.dateSubmitted)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('queryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newQuery = {
+                id: Date.now(),
+                rollNumber: userRollNumber,
+                name: document.getElementById('name').value,
+                issueType: document.getElementById('issueType').value,
+                description: document.getElementById('description').value,
+                status: 'Pending',
+                assignedTo: 'Faculty-1',
+                adminRemarks: '',
+                dateSubmitted: new Date().toISOString()
+            };
+
+            const queries = getQueries();
+            queries.push(newQuery);
+            saveQueries(queries);
+
+            // Reset form
+            this.reset();
+            document.getElementById('rollNumber').value = userRollNumber;
+
+            // Update display
+            displayQueries();
+
+            // Show success message
+            alert('Query submitted successfully!');
+        });
+
+        // Display queries on page load
+        displayQueries();
+    </script>
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Exam Branch - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container img {
+            height: 50px;
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.8rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .total-issues {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+
+        .issues-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        .issues-table th,
+        .issues-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .issues-table th {
+            background: white;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-new {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-view {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-update {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #e9ecef;
+        }
+
+        .btn-update:hover {
+            background: #357abd;
+        }
+
+        .logout-btn {
+            background: #4a90e2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #357abd;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="logo.png" alt="KLH College Logo">
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    <div class="profile-container">
+        <img src="sir.png" alt="Profile Picture" class="profile-pic">
+        <span class="roll-number" id="userRollNumber"></span>
+    </div>
+</header>
+    </header>
+
+    <main class="main-content">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Student Issues Dashboard</h1>
+            <span class="total-issues" id="totalIssues">Total Issues: 0</span>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" onchange="applyFilters()">
+                    <option value="All">All</option>
+                    <option value="New">New</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="typeFilter">Issue Type:</label>
+                <select id="typeFilter" onchange="applyFilters()">
+                    <option value="All">All</option>
+                    <option value="Marks Issue">Marks Issue</option>
+                    <option value="Name Misprint">Name Misprint</option>
+                    <option value="Hall Ticket Issue">Hall Ticket Issue</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchInput">Search:</label>
+                <input type="text" id="searchInput" placeholder="Search by roll number or name" oninput="applyFilters()">
+            </div>
+        </div>
+
+        <table class="issues-table">
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Student Name</th>
+                    <th>Issue Type</th>
+                    <th>Summary</th>
+                    <th>Submission Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="issuesTableBody"></tbody>
+        </table>
+    </main>
+
+    <script>
+        // Check if user is admin
+        if (localStorage.getItem('userRollNumber') !== 'admin') {
+            window.location.href = 'index.html';
+        }
+
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Function to get status badge class
+        function getStatusBadgeClass(status) {
+            const statusMap = {
+                'New': 'status-new',
+                'In Progress': 'status-in-progress',
+                'Resolved': 'status-resolved'
+            };
+            return statusMap[status] || 'status-new';
+        }
+
+        // Function to get queries from localStorage
+        function getQueries() {
+            return JSON.parse(localStorage.getItem('queries')) || [];
+        }
+
+        // Function to save queries to localStorage
+        function saveQueries(queries) {
+            localStorage.setItem('queries', JSON.stringify(queries));
+        }
+
+        // Function to apply filters
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+            let queries = getQueries();
+            
+            // Apply filters
+            if (statusFilter !== 'All') {
+                queries = queries.filter(query => query.status === statusFilter);
+            }
+            if (typeFilter !== 'All') {
+                queries = queries.filter(query => query.issueType === typeFilter);
+            }
+            if (searchQuery) {
+                queries = queries.filter(query => 
+                    query.rollNumber.toLowerCase().includes(searchQuery) ||
+                    query.name.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            displayQueries(queries);
+        }
+
+        // Function to display queries
+        function displayQueries(queries) {
+            const tableBody = document.getElementById('issuesTableBody');
+            document.getElementById('totalIssues').textContent = `Total Issues: ${queries.length}`;
+            tableBody.innerHTML = '';
+
+            queries.forEach(query => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${query.rollNumber}</td>
+                    <td>${query.name}</td>
+                    <td>${query.issueType}</td>
+                    <td>${query.description}</td>
+                    <td>${formatDate(query.dateSubmitted)}</td>
+                    <td><span class="status-badge ${getStatusBadgeClass(query.status)}">${query.status}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-view" onclick="viewIssue('${query.id}')">View</button>
+                        <button class="btn btn-update" onclick="updateIssue('${query.id}')">Update</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to view issue details
+        function viewIssue(id) {
+            const queries = getQueries();
+            const query = queries.find(q => q.id === id);
+            if (query) {
+                const details = `
+Issue Details:
+-----------------------------------------
+Roll Number: ${query.rollNumber}
+Student Name: ${query.name}
+Issue Type: ${query.issueType}
+Description: ${query.description}
+Status: ${query.status}
+Date Submitted: ${formatDate(query.dateSubmitted)}
+Assigned To: ${query.assignedTo || 'Not assigned'}
+Admin Remarks: ${query.adminRemarks || 'No remarks yet'}
+-----------------------------------------`;
+                alert(details);
+            } else {
+                alert('Issue not found');
+            }
+        }
+
+        // Function to update issue
+        function updateIssue(id) {
+            const queries = getQueries();
+            const queryIndex = queries.findIndex(q => q.id === id);
+            
+            if (queryIndex !== -1) {
+                const query = queries[queryIndex];
+                
+                // Create status options
+                const statusOptions = ['New', 'In Progress', 'Resolved'];
+                const currentStatus = query.status;
+                
+                // Show status selection dialog
+                const newStatus = prompt(
+                    `Current Status: ${currentStatus}\nEnter new status (New/In Progress/Resolved):`,
+                    currentStatus
+                );
+                
+                // Validate status input
+                if (newStatus && statusOptions.includes(newStatus)) {
+                    // Show remarks dialog
+                    const newRemarks = prompt(
+                        'Enter admin remarks:',
+                        query.adminRemarks || ''
+                    );
+                    
+                    if (newRemarks !== null) {
+                        // Update the query
+                        queries[queryIndex] = {
+                            ...query,
+                            status: newStatus,
+                            adminRemarks: newRemarks,
+                            lastUpdated: new Date().toISOString()
+                        };
+                        
+                        // Save and refresh
+                        saveQueries(queries);
+                        applyFilters();
+                        alert('Issue updated successfully!');
+                    }
+                } else if (newStatus !== null) {
+                    alert('Invalid status. Please enter New, In Progress, or Resolved');
+                }
+            } else {
+                alert('Issue not found');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userRollNumber');
+            window.location.href = 'index.html';
+        }
+
+        // Initial display
+        applyFilters();
+    </script>
+</body>
+</html>

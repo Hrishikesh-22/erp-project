@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLH Exam Branch - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container img {
+            height: 50px;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .roll-number {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .nav-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-card h2 {
+            margin-bottom: 1rem;
+            color: #4a90e2;
+        }
+
+        .nav-card p {
+            color: #666;
+        }
+
+        .logout-btn {
+            background: #4a90e2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .logout-btn:hover {
+            background: #357abd;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="logo.png" alt="KLH College Logo">
+        </div>
+        <div class="profile-container">
+            <img src="profile.png" alt="Profile Picture" class="profile-pic">
+            <span class="roll-number" id="userRollNumber"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="nav-options">
+            <a href="calendar.html" class="nav-card">
+                <h2>Academic Calendar</h2>
+                <p>View important dates and schedules</p>
+            </a>
+            <a href="queries.html" class="nav-card">
+                <h2>Queries</h2>
+                <p>Submit and track your queries</p>
+            </a>
+            <a href="hallticket.html" class="nav-card">
+                <h2>Hall Ticket</h2>
+                <p>Download your hall ticket</p>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Display roll number from localStorage
+        document.getElementById('userRollNumber').textContent = localStorage.getItem('userRollNumber');
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userRollNumber');
+            window.location.href = 'index.html';
+        }
+
+        // Check if user is logged in
+        if (!localStorage.getItem('userRollNumber')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
